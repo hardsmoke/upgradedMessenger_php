@@ -44,7 +44,7 @@ class AuthController
     {
         $this->userRepository->Save(new User($username, $password));
 
-        header('Location: /?action=signin');
+        header('Location: /signin');
 
         return $this->authView->Render('SigninPage.twig');
     }
