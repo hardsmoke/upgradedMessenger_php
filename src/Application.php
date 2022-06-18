@@ -51,6 +51,9 @@ class Application
             {
                 unset($_COOKIE['user']);
                 setcookie('user', '', time() - 3600, '/');
+
+                header('Location: /signin');
+
                 return $this->serviceLocator->Get('twig')->render('SigninPage.twig');
             }
 
@@ -65,21 +68,25 @@ class Application
                 ['messages' => $messages]);
         }
 
-        if (!empty($_POST) && $_GET['action'] === 'signin')
+        if ($_SERVER['REQUEST_URI'] === '/signin')
         {
+            if (empty($_POST))
+            {
+                return $this->serviceLocator->Get('twig')->render('SigninPage.twig');
+            }
             return $this->serviceLocator->Get(AuthController::class)->Login($_POST['username'], $_POST['password']);
         }
 
-        if (!empty($_POST) && $_GET['action'] === 'signup')
+        if ($_SERVER['REQUEST_URI'] === '/signup')
         {
+            if (empty($_POST))
+            {
+                return $this->serviceLocator->Get('twig')->render('SignupPage.twig');
+            }
             return $this->serviceLocator->Get(AuthController::class)->Register($_POST['username'], $_POST['password']);
         }
 
-        if (empty($_POST) && $_GET['action'] === 'signin')
-        {
-            return $this->serviceLocator->Get('twig')->render('SigninPage.twig');
-        }
-
+        header('Location: /signup');
         return $this->serviceLocator->Get('twig')->render('SignupPage.twig');
     }
 }
