@@ -16,7 +16,7 @@ class DBUserRepository implements IUserRepository
 
     private function Add(User $user)
     {
-		$this->usermapper->Add($user);
+	$this->usermapper->Add($user);
     }
 
     public function FindByUsername(string $username) : User
