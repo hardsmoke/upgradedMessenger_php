@@ -14,18 +14,8 @@ class DBUserRepository implements IUserRepository
         $this->usermapper = $usermapper;
     }
 
-    private function Add(User $user)
-    {
-	$this->usermapper->Add($user);
-    }
-
-    public function FindByUsername(string $username) : User
-    {
-        return $this->usermapper->FindByUsername($username);
-    }
-
     public function Save(User $user)
     {
-        $this->Add($user);
+        $this->usermapper->Add($user);
     }
 }
