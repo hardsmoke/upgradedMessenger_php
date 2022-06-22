@@ -1,49 +1,39 @@
 <?php
 
-namespace Messenger\Model;
+namespace Messenger\Model\Mapper;
 
-use JetBrains\PhpStorm\ArrayShape;
-use ReturnTypeWillChange;
+use PDO;
+use Messenger\Model\Entity\User;
 
-class User implements \JsonSerializable
+class UserMapper implements \JsonSerializable
 {
-    private string $username;
-    private string $password;
+    private PDO $connection;
 
-    public function __construct(?string $username, $password)
+    public function __construct(string $dbHost, string $dbName, string $dbUsername, string $dbPassword)
     {
-        $this->username = $username;
-        $this->password = $password;
+        $this->connection = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUsername, $dbPassword);
     }
 
-    public function GetUsername() : string
-    {
-        return $this->username;
-    }
+	public function Add(User $user)
+	{
+		$username = $user->GetUsername();
+        $password = $user->GetPassword();
 
-    public function GetPassword() : string
-    {
-        return $this->password;
-    }
+        $query = "INSERT INTO users(username, password) VALUES ('$username', '$password')";
+        $this->connection->query($query);
+	}
+	
+	public function FindByName(string $username) : User
+	{
+		$query = "SELECT * FROM users WHERE users.username = '$username'";
+        $usersParams = $this->connection->query($query)->fetch(PDO::FETCH_ASSOC);
+        $user = new User('', '');
 
-    public function Hash(string $string) : string
-    {
-        return password_hash($string);
-    }
+        if ($usersParams['username'] != null)
+        {
+            return new User($usersParams['username'], $usersParams['password']);
+        }
 
-    public function GetHashedPassword() : string
-    {
-        return Hash($this->password);
-    }
-
-    #[ReturnTypeWillChange]
-    #[ArrayShape(['username' => "null|string", 'password' => "string"])]
-    public function jsonSerialize(): array
-    {
-        return
-        [
-            'username' => $this->username,
-            'password' => $this->password
-        ];
-    }
+        return $user;
+	}
 }
