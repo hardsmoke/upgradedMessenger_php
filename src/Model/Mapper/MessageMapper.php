@@ -11,20 +11,43 @@ class MessageMapper
         $this->connection = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUsername, $dbPassword);
     }
 	
-    public function Add(Message $message)
+    public function Add(Message $message) : bool
     {
         $messageText = $message->GetMessage();
         $username = $message->GetUsername();
 
         $query = "INSERT INTO messages(message, username, datetime) VALUES ('$messageText', '$username', NOW())";
-        $this->connection->query($query);
+	    
+        return $this->connection->query($query);
     }
-
+	
+    public function Delete(int $id) : bool
+    {
+	$query = $this->connection->prepare('DELETE FROM messages WHERE id = :id');
+        return $query->execute();
+    }
 
     public function GetAll() : array
     {
-        $query = "SELECT message, username, datetime FROM messages";
-
-        return $this->connection->query($query)->fetchAll(PDO::FETCH_ASSOC);
+        $query = $this->connection->prepare('SELECT message, username FROM messages');
+	
+	$query->execute();
+	$data = $query->fetchAll();
+        $messages = array();
+        foreach ($data as $array){
+            $messages[] = new Message($array['message'], $array['username']);
+        }
+	    
+        return $messages;
+    }
+	
+    public function GetById(int $id) : Message
+    {
+	$query = $this->pdo->prepare('SELECT * FROM messages WHERE id = :id');
+	    
+        $query->execute(['id' => $id]);
+        $data = $query->fetch();
+	
+        return new Message($data['message'], $data['username']);
     }
 }
