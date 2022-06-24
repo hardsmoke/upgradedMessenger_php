@@ -19,8 +19,8 @@ class UserMapper implements \JsonSerializable
 	    $username = $user->GetUsername();
             $password = $user->GetPassword();
 
-            $query = "INSERT INTO users(username, password) VALUES ('$username', '$password')";
-            $this->connection->query($query);
+	    $query = $this->connection->prepare("INSERT INTO messages($username, $password) VALUES (:username, :password))";
+            return $query->execute(['username' => $username, 'password' => $password]);
 	}
 	
 	public function FindByName(string $username) : User
