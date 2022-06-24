@@ -14,8 +14,23 @@ class DBMessageRepository implements IMessageRepository
         $this->messagemapper = $messagemapper;
     }
 
-    public function Save(Message $message)
+    public function Add(Message $message)
     {
         $this->messagemapper->Add($message);
+    }
+    
+    public function Delete(int $id)
+    {
+        $this->messagemapper->Delete($id);
+    }
+    
+    public function GetAll()
+    {
+        return $this->messagemapper->GetAll();
+    }
+    
+    public function GetById(int $id)
+    {
+        return $this->messagemapper->GetById($id);
     }
 }
