@@ -16,9 +16,8 @@ class MessageMapper
         $messageText = $message->GetMessage();
         $username = $message->GetUsername();
 
-        $query = "INSERT INTO messages(message, username, datetime) VALUES ('$messageText', '$username', NOW())";
-	    
-        return $this->connection->query($query);
+        $query = $this->connection->prepare("INSERT INTO messages(message, username, datetime) VALUES (:messageText, :username, NOW()))";
+        return $query->execute(['messageText' => $messageText, 'username' => $username]);
     }
 	
     public function Delete(int $id) : bool
